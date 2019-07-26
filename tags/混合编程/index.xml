@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>混合编程 on HaoKunT的博客</title>
+    <link>http://haokunt.github.io/tags/%E6%B7%B7%E5%90%88%E7%BC%96%E7%A8%8B/</link>
+    <description>Recent content in 混合编程 on HaoKunT的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 26 Jul 2019 06:13:00 +0800</lastBuildDate>
+    
+	<atom:link href="http://haokunt.github.io/tags/%E6%B7%B7%E5%90%88%E7%BC%96%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SWIG编译海康威视SDK 使用golang</title>
+      <link>http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/</link>
+      <pubDate>Fri, 26 Jul 2019 06:13:00 +0800</pubDate>
+      
+      <guid>http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/</guid>
+      <description>吐槽的话 先允许我吐槽一下海康威视的SDK有多难用SWIG编译
+编译过程 准备工作 先声明我编译的是linux版本的，环境是ubuntu 18.04，还没有开始做开发，但是编译的过程没有报错
+ Tips:
+windows的也尝试了(win10)，没有问题</description>
+    </item>
+    
+    <item>
+      <title>SWIG 以Python为例</title>
+      <link>http://haokunt.github.io/2019/07/26/swig-%E4%BB%A5python%E4%B8%BA%E4%BE%8B/</link>
+      <pubDate>Fri, 26 Jul 2019 06:12:25 +0800</pubDate>
+      
+      <guid>http://haokunt.github.io/2019/07/26/swig-%E4%BB%A5python%E4%B8%BA%E4%BE%8B/</guid>
+      <description>SWIG用途 SWIG是用于开发C/C++与Java，Python，Perl，C#等高级语言之间接口的框架，利用这个框架，我们可以很方便的将C/C++程序应用在Python等高级语言中。
+SWIG的步骤 以Python为例  安装SWIG(官网下载)，选择对应的环境下载即可，安装完成后将swig命令所在目录添加至环境 准备好源文件和头文件
+// example.h #include &amp;lt;iostream&amp;gt; using namespace std; class example { private: int num; public: void say_hello(void); void change(int din); int get_num(); };  // example.</description>
+    </item>
+    
+  </channel>
+</rss>

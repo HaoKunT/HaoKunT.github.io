@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on HaoKunT的博客</title>
+    <link>http://haokunt.github.io/post/</link>
+    <description>Recent content in Posts on HaoKunT的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 26 Jul 2019 06:13:00 +0800</lastBuildDate>
+    
+	<atom:link href="http://haokunt.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SWIG编译海康威视SDK 使用golang</title>
+      <link>http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/</link>
+      <pubDate>Fri, 26 Jul 2019 06:13:00 +0800</pubDate>
+      
+      <guid>http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/</guid>
+      <description>吐槽的话 先允许我吐槽一下海康威视的SDK有多难用SWIG编译
+编译过程 准备工作 先声明我编译的是linux版本的，环境是ubuntu 18.04，还没有开始做开发，但是编译的过程没有报错
+ Tips:
+windows的也尝试了(win10)，没有问题</description>
+    </item>
+    
+    <item>
+      <title>SWIG 以Python为例</title>
+      <link>http://haokunt.github.io/2019/07/26/swig-%E4%BB%A5python%E4%B8%BA%E4%BE%8B/</link>
+      <pubDate>Fri, 26 Jul 2019 06:12:25 +0800</pubDate>
+      
+      <guid>http://haokunt.github.io/2019/07/26/swig-%E4%BB%A5python%E4%B8%BA%E4%BE%8B/</guid>
+      <description>SWIG用途 SWIG是用于开发C/C++与Java，Python，Perl，C#等高级语言之间接口的框架，利用这个框架，我们可以很方便的将C/C++程序应用在Python等高级语言中。
+SWIG的步骤 以Python为例  安装SWIG(官网下载)，选择对应的环境下载即可，安装完成后将swig命令所在目录添加至环境 准备好源文件和头文件
+// example.h #include &amp;lt;iostream&amp;gt; using namespace std; class example { private: int num; public: void say_hello(void); void change(int din); int get_num(); };  // example.</description>
+    </item>
+    
+    <item>
+      <title>Seafile</title>
+      <link>http://haokunt.github.io/2019/07/26/seafile/</link>
+      <pubDate>Fri, 26 Jul 2019 06:07:06 +0800</pubDate>
+      
+      <guid>http://haokunt.github.io/2019/07/26/seafile/</guid>
+      <description>seafile seafile是一个同步云盘，可以在自己的服务器上自行搭建同步云盘，基于django开发，python版本为python2.7，目前有社区版可用。
+部署 从seafile官网上下载linux安装包即可，然后按照官网的服务器手册完成一键部署
+这里需要注意权限问题，建议新开一个seafile用户来运行seafile
+配置开机自启和服务 按照官网的服务器手册来即可
+配置ssl 按照官网即可，这里由于没有443端口，因此无法混用</description>
+    </item>
+    
+    <item>
+      <title>Golang的小技巧</title>
+      <link>http://haokunt.github.io/2019/07/26/golang%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Fri, 26 Jul 2019 03:12:44 +0800</pubDate>
+      
+      <guid>http://haokunt.github.io/2019/07/26/golang%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>go命令行参数 编译 go build 是最简单的编译命令，对于一个包，这个命令只会做检查，即检查包是否有编译错误，对于main则会生成一个可执行文件.
+   参数 参数含义     -o 指定输出的可执行文件名称   -x 输出详细信息，包含编译时的每一步骤    cgo cgo是go语言对于和C语言混合编程所给出的官方解决方案，用C包解决，对于使用了cgo的包来说，其编译可以有额外的参数</description>
+    </item>
+    
+  </channel>
+</rss>

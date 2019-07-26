@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.56.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SWIG编译海康威视SDK 使用golang | HaoKunT的博客</title>
+    <meta property="og:title" content="SWIG编译海康威视SDK 使用golang - HaoKunT的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content="2019-07-26T06:13:00&#43;08:00">
+        
+        
+    <meta property="article:modified_time" content="2019-07-26T06:13:00&#43;08:00">
+        
+    <meta name="Keywords" content="golang,go语言,python,HaoKunT">
+    <meta name="description" content="SWIG编译海康威视SDK 使用golang">
+        
+    <meta name="author" content="HaoKunT">
+    <meta property="og:url" content="http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    
+        <link rel="stylesheet" href="/css/prism.css">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+<body>
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://haokunt.github.io">
+                        HaoKunT的博客
+                    </a>
+                
+                <p class="description">GIS学生党，喜欢学习新技术</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://haokunt.github.io">首页</a>
+                    
+                    <a  href="http://haokunt.github.io/tools/" title="工具">工具</a>
+                    
+                    <a  href="http://haokunt.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="http://haokunt.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="body">
+    <div class="container">
+        <div class="col-group">
+
+            <div class="col-8" id="main">
+                <div class="res-cons">
+                    <article class="post">
+                        <header>
+                            <h1 class="post-title">SWIG编译海康威视SDK 使用golang</h1>
+                        </header>
+                        <date class="post-meta meta-date">
+                            2019年7月26日
+                        </date>
+                        
+                        <div class="post-meta">
+                            <span>|</span>
+                            
+                                <span class="meta-category"><a href="http://haokunt.github.io/categories/golang">Golang</a></span>
+                            
+                                <span class="meta-category"><a href="http://haokunt.github.io/categories/swig">SWIG</a></span>
+                            
+                        </div>
+                        
+                        
+                        <div class="post-meta">
+                            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span> 阅读</span></span>
+                        </div>
+                        
+                        
+                        <div class="clear">
+                            <div class="toc-article">
+                                <div class="toc-title">文章目录</div>
+                                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#吐槽的话">吐槽的话</a></li>
+<li><a href="#编译过程">编译过程</a>
+<ul>
+<li><a href="#准备工作">准备工作</a></li>
+<li><a href="#编写interface文件">编写interface文件</a></li>
+<li><a href="#改写头文件">改写头文件</a>
+<ul>
+<li><a href="#使用正则表达式去掉所有注释">使用正则表达式去掉所有注释：</a></li>
+<li><a href="#使用正则表达式去掉函数前面的-net-dvr-api-和-std">使用正则表达式去掉函数前面的<code>NET_DVR_API</code>和<code>__std</code></a></li>
+<li><a href="#去掉callback">去掉CALLBACK</a></li>
+<li><a href="#使用正则为无tag的结构体加上tag">使用正则为无tag的结构体加上tag</a></li>
+<li><a href="#删除无实现的函数">删除无实现的函数</a></li>
+</ul></li>
+<li><a href="#开始编译">开始编译</a>
+<ul>
+<li><a href="#生成xxx-wrap-c文件和xxx-go文件">生成xxx_wrap.c文件和xxx.go文件</a></li>
+<li><a href="#编译">编译</a></li>
+</ul></li>
+<li><a href="#报错了怎么办">报错了怎么办</a></li>
+<li><a href="#其他语言">其他语言</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+                            </div>
+                        </div>
+                        
+                        <div class="post-content">
+                            
+
+<h2 id="吐槽的话">吐槽的话</h2>
+
+<p>先允许我吐槽一下海康威视的SDK有多难用SWIG编译</p>
+
+<h2 id="编译过程">编译过程</h2>
+
+<h3 id="准备工作">准备工作</h3>
+
+<p>先声明我编译的是linux版本的，环境是ubuntu 18.04，还没有开始做开发，但是编译的过程没有报错</p>
+
+<blockquote>
+<p>Tips:</p>
+
+<p>windows的也尝试了(win10)，没有问题</p>
+</blockquote>
+
+<p>首先你需要去海康威视的官网下载<a href="https://www.hikvision.com/cn/download_61.html">SDK</a>，然后安装好Go和SWIG，设定好<code>GOPATH</code>，然后将SDK里面的<code>HCNetSDK.h</code>文件放至<code>$GOPATH/src/hkvision</code>下</p>
+
+<blockquote>
+<p>不知道GOPATH是什么的童鞋请自行百度</p>
+</blockquote>
+
+<h3 id="编写interface文件">编写interface文件</h3>
+
+<p>interface文件是SWIG的接口文件，用来定义<code>C</code>语言环境中的变量，函数等在目标语言环境中的表达，具体可参考我另一篇文章。这里我们简单粗暴的直接包含头文件好了</p>
+
+<pre><code class="language-C">#include &lt;HCNetSDK.h&gt;
+</code></pre>
+
+<h3 id="改写头文件">改写头文件</h3>
+
+<p>海康威视提供的头文件是不能被SWIG所识别的，这是由于SWIG对于一些C的语法不支持，导致其会疯狂的报语法错误，再加上语法错误的原因语焉不详，SWIG能支持啥不能支持啥完全懵逼，只能靠猜，目前已知的一些不支持的语法</p>
+
+<ul>
+<li>注释里面套注释，例如这样的<code>//这里是注释1 /*这里是注释2*/</code></li>
+<li><code>#define xxx</code>时，若后面函数被<code>xxx</code>修饰，当<code>xxx</code>无对应的值而仅仅是被定义的时候，SWIG认为需要在<code>xxx</code>后面加分号</li>
+<li>联合嵌套在C++中是不支持的</li>
+</ul>
+
+<p>因此我们需要先对头文件进行改写，另外请注意SWIG之后需要用cgo来进行编译，而cgo是不支持C++的，所以我们需要将C++的语法去掉，尤其是<code>extern &quot;C&quot;</code>，用宏定义即可（C++自带<code>__cplusplus</code>宏）</p>
+
+<h4 id="使用正则表达式去掉所有注释">使用正则表达式去掉所有注释：</h4>
+
+<ul>
+<li><code>//.*$</code></li>
+<li><code>/\*[\w\s\d\[\];\.\\]*\*/</code> (这里中括号中间要加一个代表中文的东西)</li>
+</ul>
+
+<h4 id="使用正则表达式去掉函数前面的-net-dvr-api-和-std">使用正则表达式去掉函数前面的<code>NET_DVR_API</code>和<code>__std</code></h4>
+
+<blockquote>
+<p>这里的正则想不起来了反正到时候自己看这写就好了</p>
+</blockquote>
+
+<h4 id="去掉callback">去掉CALLBACK</h4>
+
+<p>这里正则也想不起来了</p>
+
+<blockquote>
+<p>这里是因为CALLBACK在SWIG的时候过不了</p>
+</blockquote>
+
+<h4 id="使用正则为无tag的结构体加上tag">使用正则为无tag的结构体加上tag</h4>
+
+<p>这里正则也想不起来了</p>
+
+<blockquote>
+<p>多说一句，这里是因为后来gcc报了一个<code>warning</code>，没有这个tag的结构提貌似在外部就不可见了，不知道什么情况，反正我给这玩意加上了，要是有大神知道什么情况的话可以选择性忽略</p>
+</blockquote>
+
+<h4 id="删除无实现的函数">删除无实现的函数</h4>
+
+<p>有一些函数在so里面并没有实现，我在官方的文档上也没看到这个函数，但是头文件里面已经有相关的函数定义，而没有实现的话在链接的时候gcc会因为没有找到函数实现报错，因此这一点比较坑，你需要先编译一遍，然后对着报错手动把这些函数删掉，通常包括旧有方法的新版本，例如<code>xxxx_V50</code>等等，和具体的SDK版本有关</p>
+
+<h3 id="开始编译">开始编译</h3>
+
+<h4 id="生成xxx-wrap-c文件和xxx-go文件">生成xxx_wrap.c文件和xxx.go文件</h4>
+
+<p>首先生成wrap文件和go文件，执行的指令是<code>swig -go -cgo -intgosize 64 hkvision.i</code>，这一步大概需要半小时，因具体的机器而异，我用的是E5 2690 v3</p>
+
+<h4 id="编译">编译</h4>
+
+<p>编译之前，先打开go文件，在cgo的前面的注释上加上<code>#cgo LDFLAGS: -L./ -lxxxx</code>，就是给gcc参数，gcc链接的时候去找动态库</p>
+
+<p>然后开始编译，<code>go install -x -v</code>，这一步需要的时间很长，我机器上大概4个半小时，你可以晚上挂着跑第二天起来看结果，或者<code>nohup</code>挂在后台，你去做其他的事情。</p>
+
+<p>一切顺利的话在<code>$GOPATH/pkg/linux_amd64/</code>下面你会看到<code>hikvision.a</code>文件（超大，有200M）</p>
+
+<h3 id="报错了怎么办">报错了怎么办</h3>
+
+<p>沉着冷静别惊慌，先去看输出，输出里面有很多有用信息，这就是为什么编译的时候带上<code>-x</code>参数，你可以看到详细的编译过程，报错通常有两种</p>
+
+<ul>
+<li>语法错误，配置错误等，这种错误一般马上就会报错，然后程序退出，这都是低级错误，你很快就能改好</li>
+<li>编译错误，这种错误就很麻烦了，一般都是你等了几个小时，结果给你报错，不过别慌，无非就是你头文件没改好，或者你库的位置不对，链接不到动态库</li>
+</ul>
+
+<h3 id="其他语言">其他语言</h3>
+
+<p>其他语言应该都差不多，具体的差别就是看你使用的编译器了，<code>msvc</code> <code>mingw</code> 原生<code>gcc</code>等</p>
+
+<blockquote>
+<p>PS：<code>msvc</code>和<code>gcc</code>差别蛮大的，另外cgo没有使用g++的原因是会报一个错，在<code>pthread</code>这个库里面，这个库是cgo原生需要引入的一个库，而这个库貌似不支持g++</p>
+</blockquote>
+
+                        </div>
+
+                        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="http://haokunt.github.io">HaoKunT</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/">http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+                        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/2019/07/26/swig-%E4%BB%A5python%E4%B8%BA%E4%BE%8B/">SWIG 以Python为例</a></li>
+        
+        <li><a href="/2019/07/26/golang%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/">Golang的小技巧</a></li>
+        
+        <li><a href="/2019/07/26/seafile/">Seafile</a></li>
+        
+        <li><a href="/archives/">归档</a></li>
+        
+    </ul>
+</div>
+
+
+                        <div class="post-meta meta-tags">
+                            
+                            <ul class="clearfix">
+                                
+                                <li><a href="http://haokunt.github.io/tags/swig">swig</a></li>
+                                
+                                <li><a href="http://haokunt.github.io/tags/golang">golang</a></li>
+                                
+                                <li><a href="http://haokunt.github.io/tags/%E6%B7%B7%E5%90%88%E7%BC%96%E7%A8%8B">混合编程</a></li>
+                                
+                            </ul>
+                            
+                        </div>
+                    </article>
+                    
+    
+
+    
+    
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "HaoKunT/blog-hugo-comments"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+    
+                </div>
+            </div>
+            <div id="secondary">
+    <section class="widget">
+        <form id="search" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://haokunt.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://haokunt.github.io/2019/07/26/swig%E7%BC%96%E8%AF%91%E6%B5%B7%E5%BA%B7%E5%A8%81%E8%A7%86sdk-%E4%BD%BF%E7%94%A8golang/" title="SWIG编译海康威视SDK 使用golang">SWIG编译海康威视SDK 使用golang</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/2019/07/26/swig-%E4%BB%A5python%E4%B8%BA%E4%BE%8B/" title="SWIG 以Python为例">SWIG 以Python为例</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/2019/07/26/seafile/" title="Seafile">Seafile</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/2019/07/26/golang%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/" title="Golang的小技巧">Golang的小技巧</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://haokunt.github.io/categories/golang/">golang(2)</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/categories/python/">python(1)</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/categories/swig/">swig(2)</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/categories/%E5%AD%98%E5%82%A8/">存储(1)</a>
+    </li>
+    
+    <li>
+        <a href="http://haokunt.github.io/categories/%E5%B7%A5%E5%85%B7/">工具(1)</a>
+    </li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="http://haokunt.github.io/tags/golang/">golang</a>
+    
+    <a href="http://haokunt.github.io/tags/python/">python</a>
+    
+    <a href="http://haokunt.github.io/tags/seafile/">seafile</a>
+    
+    <a href="http://haokunt.github.io/tags/swig/">swig</a>
+    
+    <a href="http://haokunt.github.io/tags/%E4%BA%91%E7%9B%98/">云盘</a>
+    
+    <a href="http://haokunt.github.io/tags/%E5%AD%98%E5%82%A8/">存储</a>
+    
+    <a href="http://haokunt.github.io/tags/%E5%B7%A5%E5%85%B7/">工具</a>
+    
+    <a href="http://haokunt.github.io/tags/%E6%B7%B7%E5%90%88%E7%BC%96%E7%A8%8B/">混合编程</a>
+    
+</div>
+    </section>
+
+    
+<section class="widget">
+    <h3 class="widget-title">友情链接</h3>
+    <ul class="widget-list">
+        
+        <li>
+            <a target="_blank" href="https://baike.baidu.com/item/R%E8%AF%AD%E8%A8%80%E7%A9%BA%E9%97%B4%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E5%88%86%E6%9E%90%E5%AE%9E%E8%B7%B5%E6%95%99%E7%A8%8B" title="R语言空间数据处理与分析实践教程">R语言空间数据处理与分析实践教程</a>
+        </li>
+        
+    </ul>
+</section>
+
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="http://haokunt.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+        </div>
+    </div>
+</div>
+<footer id="footer">
+    <div class="container">
+        &copy; 2019 <a href="http://haokunt.github.io">HaoKunT的博客 By HaoKunT</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        <a href="https://www.flysnow.org/" target="_blank">Theme</a> based on <a href="https://github.com/rujews/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    <script type="text/javascript">
+    
+    (function(){
+        $("pre code").parent().addClass("line-numbers")
+    }())
+
+    window.MathJax = {
+        tex2jax: {
+            inlineMath: [ ['$','$'] ],
+            processEscapes: true
+        }
+    };
+    </script>
+    <script type="text/javascript" src="/js/prism.js" async="true"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src="/js/totop.js?v=0.0.0" async=""></script>
+
+
+
+<script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+</body>
+</html>
